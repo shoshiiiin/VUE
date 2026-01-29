@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Sparkles, Download, Image as ImageIcon, Loader2, UploadCloud, Plus, Trash2 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Sparkles, Download, Image as ImageIcon, Loader2, UploadCloud, Plus, Trash2, Share2, Check } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FileUpload } from "@/components/ui/file-upload"
@@ -17,10 +17,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { ShotLibrary } from "@/components/studio/shot-library"
 import { ActiveTemplatesList } from "@/components/studio/active-templates-list"
 import { ResultsGrid } from "@/components/studio/results-grid"
+import { upload } from "@vercel/blob/client";
+import Link from "next/link";
 
 export default function Home() {
   // apiKey removed
 
+  const [workspaceId, setWorkspaceId] = React.useState<string | null>(null);
   const [modelId, setModelId] = React.useState("gemini-3-pro-image-preview")
   // Brand Context
   const { logoUrl, companyName } = useBrand()
@@ -158,6 +161,21 @@ export default function Home() {
       return
     }
 
+    // 1. Ensure Workspace Exists
+    let currentWorkspaceId = workspaceId;
+    if (!currentWorkspaceId) {
+        try {
+            const wReq = await fetch("/api/workspaces", { method: "POST" });
+            const wData = await wReq.json();
+            if (wData.workspaceId) {
+                currentWorkspaceId = wData.workspaceId;
+                setWorkspaceId(wData.workspaceId);
+            }
+        } catch (e) {
+            console.error("Failed to create workspace", e);
+        }
+    }
+
     setGlobalError(null)
     setResults({})
     setErrorState({})
@@ -171,6 +189,30 @@ export default function Home() {
     const generationPromise = async () => {
         try {
             const objectBase64s = await Promise.all(objectFiles.map(toBase64))
+            
+            // Background Upload of Inputs to Workspace
+            if (currentWorkspaceId) {
+                const uploadInputs = async () => {
+                   const newInputs: any[] = [];
+                   for (const file of objectFiles) {
+                       try {
+                           const blob = await upload(`workspaces/${currentWorkspaceId}/inputs/${file.name}`, file, {
+                               access: 'public',
+                               handleUploadUrl: '/api/upload',
+                           });
+                           newInputs.push({ name: file.name, url: blob.url, type: 'input' });
+                       } catch (e) { console.error("Input upload failed", e); }
+                   }
+                   // Update Manifest
+                   if (newInputs.length > 0) {
+                       await fetch(`/api/workspaces/${currentWorkspaceId}/manifest`, {
+                           method: "POST",
+                           body: JSON.stringify({ addInputs: newInputs })
+                       });
+                   }
+                };
+                uploadInputs(); // Fire and forget
+            }
       
             const generateForTemplate = async (template: typeof templates[0]) => {
                 try {
@@ -219,6 +261,26 @@ export default function Home() {
                              });
                           }).catch(err => console.error("WebP conversion failed, saving original", err));
                       });
+                    }
+                    
+                    if (data.image && currentWorkspaceId) {
+                         // Background Upload of Output
+                         const blobName = `${productBaseName}${template.suffix}.png`;
+                         // Convert base64 to Blob
+                         const res = await fetch(`data:${data.mimeType || 'image/jpeg'};base64,${data.image}`);
+                         const imageBlob = await res.blob();
+                         
+                         upload(`workspaces/${currentWorkspaceId}/outputs/${blobName}`, imageBlob, {
+                           access: 'public',
+                           handleUploadUrl: '/api/upload',
+                         }).then(blob => {
+                             fetch(`/api/workspaces/${currentWorkspaceId}/manifest`, {
+                                 method: "POST",
+                                 body: JSON.stringify({ 
+                                     addOutputs: [{ name: blobName, url: blob.url, type: 'output' }] 
+                                 })
+                             });
+                         }).catch(e => console.error("Output upload failed", e));
                     }
                 } catch (e: any) {
                     console.error(`Error generating ${template.name}`, e);
@@ -297,6 +359,19 @@ export default function Home() {
                     onChange={setObjectFiles}
                     acceptMultiple={true}
                 />
+                
+                {workspaceId && (
+                    <div className="p-4 bg-[var(--surface-1)] rounded-lg border border-[var(--border)] flex items-center justify-between">
+                         <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                             Workspace Active
+                         </div>
+                         <Button variant="ghost" size="sm" className="h-8 gap-2" onClick={() => window.open(`/share/${workspaceId}`, '_blank')}>
+                                 <Share2 className="w-3.5 h-3.5" />
+                                 Share Link
+                         </Button>
+                    </div>
+                )}
                 
                 <Button 
                     onClick={handleGenerateValues} 

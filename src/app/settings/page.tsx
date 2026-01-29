@@ -101,7 +101,7 @@ export default function SettingsPage() {
                             <Palette className="w-5 h-5 text-accent-500" />
                             Whitelabel Branding
                         </CardTitle>
-                        <CardDescription>Customize the look and feel of the Product Studio.</CardDescription>
+                        <CardDescription>Customize the look and feel of VUE.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-8 md:grid-cols-2">
                         

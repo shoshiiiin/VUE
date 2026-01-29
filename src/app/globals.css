@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 /* ========================================
-   PRODUCT STUDIO – DESIGN SYSTEM
+   VUE – DESIGN SYSTEM
    Light Mode Glassmorphism + Soft Lavender
    Refined with Advanced Surface Tokens
    ======================================== */
 
 @theme {
   /* Base / Background */
-  --color-bg-0: #F7F8FB;
-  --color-bg-1: #EDEFF6;
-  --color-bg-2: #DDE2EC;
-  --color-bg-3: #CDD3DD;
+  --color-bg-0: #f7f8fb;
+  --color-bg-1: #edeff6;
+  --color-bg-2: #dde2ec;
+  --color-bg-3: #cdd3dd;
 
   /* Surfaces (glass) */
   --color-surface-0: rgba(255, 255, 255, 0.72);
@@ -19,23 +19,23 @@
   --color-surface-2: rgba(255, 255, 255, 0.42);
 
   /* Accent (soft lavender / mauve) */
-  --color-accent-300: #D2C5D8;
-  --color-accent-400: #B9AEC7;
-  --color-accent-500: #9286A0;
+  --color-accent-300: #d2c5d8;
+  --color-accent-400: #b9aec7;
+  --color-accent-500: #9286a0;
 
   /* Cool Accent (slate-blue) */
-  --color-cool-300: #C9D7E5;
-  --color-cool-400: #A2AFBE;
+  --color-cool-300: #c9d7e5;
+  --color-cool-400: #a2afbe;
 
   /* Text */
-  --color-text-strong: #1E2027;
-  --color-text: #3A3A3A;
-  --color-text-muted: #636B7C;
+  --color-text-strong: #1e2027;
+  --color-text: #3a3a3a;
+  --color-text-muted: #636b7c;
 
   /* Status */
-  --color-success: #79A99A;
-  --color-warning: #CAA46A;
-  --color-danger: #C07A7A;
+  --color-success: #79a99a;
+  --color-warning: #caa46a;
+  --color-danger: #c07a7a;
 
   /* Radii */
   --radius-shell: 32px;
@@ -51,10 +51,10 @@
 @layer base {
   :root {
     /* Base / Background */
-    --bg-0: #F7F8FB;
-    --bg-1: #EDEFF6;
-    --bg-2: #DDE2EC;
-    --bg-3: #CDD3DD;
+    --bg-0: #f7f8fb;
+    --bg-1: #edeff6;
+    --bg-2: #dde2ec;
+    --bg-3: #cdd3dd;
 
     /* Surfaces (glass) */
     --surface-0: rgba(255, 255, 255, 0.72);
@@ -62,28 +62,34 @@
     --surface-2: rgba(255, 255, 255, 0.42);
 
     /* Accent (soft lavender / mauve) */
-    --accent-300: #D2C5D8;
-    --accent-400: #B9AEC7;
-    --accent-500: #9286A0;
+    --accent-300: #d2c5d8;
+    --accent-400: #b9aec7;
+    --accent-500: #9286a0;
 
     /* Text */
-    --text-strong: #1E2027;
-    --text: #3A3A3A;
-    --text-muted: #636B7C;
+    --text-strong: #1e2027;
+    --text: #3a3a3a;
+    --text-muted: #636b7c;
 
     /* Lines / Borders */
     --border-light: rgba(255, 255, 255, 0.72);
     --border: rgba(110, 120, 140, 0.14);
 
     /* Shadows */
-    --shadow-elev-1: 0 8px 24px rgba(30, 32, 39, 0.10);
+    --shadow-elev-1: 0 8px 24px rgba(30, 32, 39, 0.1);
     --shadow-elev-2: 0 18px 60px rgba(30, 32, 39, 0.12);
     --shadow-float: 0 28px 90px rgba(30, 32, 39, 0.14);
-    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.70), inset 0 -1px 0 rgba(110, 120, 140, 0.08);
+    --shadow-inset:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 0 rgba(110, 120, 140, 0.08);
 
     /* Glass */
     --glass-blur: 18px;
-    --glass-grad: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.38));
+    --glass-grad: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.78),
+      rgba(255, 255, 255, 0.38)
+    );
 
     /* Focus Ring */
     --ring: 0 0 0 3px rgba(146, 134, 160, 0.25);
@@ -96,9 +102,9 @@
     --r-pill: 999px;
 
     /* Status */
-    --success: #79A99A;
-    --warning: #CAA46A;
-    --danger: #C07A7A;
+    --success: #79a99a;
+    --warning: #caa46a;
+    --danger: #c07a7a;
 
     /* Motion */
     --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
@@ -109,8 +115,16 @@
   /* Ambient Canvas Background */
   .app-canvas {
     background:
-      radial-gradient(900px 520px at 18% 12%, rgba(255, 255, 255, 0.78), transparent 60%),
-      radial-gradient(900px 520px at 82% 88%, rgba(210, 197, 216, 0.55), transparent 62%),
+      radial-gradient(
+        900px 520px at 18% 12%,
+        rgba(255, 255, 255, 0.78),
+        transparent 60%
+      ),
+      radial-gradient(
+        900px 520px at 82% 88%,
+        rgba(210, 197, 216, 0.55),
+        transparent 62%
+      ),
       linear-gradient(180deg, var(--bg-1), var(--bg-2));
     color: var(--text);
     min-height: 100vh;
@@ -120,7 +134,13 @@
 @layer components {
   /* 0. Base Typography */
   .ui {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     color: var(--text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -135,20 +155,25 @@
     backdrop-filter: blur(22px) saturate(1.15);
   }
 
-  .glass-card, .card {
+  .glass-card,
+  .card {
     background: var(--glass-grad);
     border: 1px solid var(--border);
     border-radius: var(--r-card);
-    box-shadow: var(--shadow-elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    box-shadow:
+      var(--shadow-elev-1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(var(--glass-blur)) saturate(1.12);
   }
 
   .card--raised {
-    box-shadow: var(--shadow-elev-2), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    box-shadow:
+      var(--shadow-elev-2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
   }
 
   .card--muted {
-    background: rgba(255, 255, 255, 0.50);
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .tile {
@@ -156,13 +181,16 @@
     border: 1px solid var(--border);
     border-radius: var(--r-tile);
     box-shadow: var(--shadow-elev-1), var(--shadow-inset);
-    transition: transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard), background 0.18s var(--ease-standard);
+    transition:
+      transform 0.18s var(--ease-standard),
+      box-shadow 0.18s var(--ease-standard),
+      background 0.18s var(--ease-standard);
   }
 
   .tile:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-elev-2), var(--shadow-inset);
-    background: rgba(255, 255, 255, 0.70);
+    background: rgba(255, 255, 255, 0.7);
   }
 
   .tile:active {
@@ -172,17 +200,23 @@
   }
 
   .tile.is-selected {
-    border-color: rgba(146, 134, 160, 0.30);
-    box-shadow: 0 0 0 4px rgba(210, 197, 216, 0.35), var(--shadow-elev-1);
+    border-color: rgba(146, 134, 160, 0.3);
+    box-shadow:
+      0 0 0 4px rgba(210, 197, 216, 0.35),
+      var(--shadow-elev-1);
   }
 
   /* 2. Sidebar / Panels */
   .sidebar {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.25) 100%
+    );
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 32px; /* Increased radius for modern feel */
     backdrop-filter: blur(40px) saturate(1.2); /* Stronger frost */
-    box-shadow: 
+    box-shadow:
       0 20px 40px rgba(0, 0, 0, 0.05),
       inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
@@ -194,7 +228,7 @@
     backdrop-filter: blur(18px) saturate(1.15);
     box-shadow: var(--shadow-elev-1);
   }
-  
+
   /* Sidebar Navigation */
   .nav-item {
     display: flex;
@@ -217,9 +251,13 @@
 
   .nav-item.is-active {
     color: var(--text-strong);
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0.6)
+    );
     border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 
+    box-shadow:
       0 4px 12px rgba(210, 197, 216, 0.25),
       inset 0 1px 0 rgba(255, 255, 255, 0.9);
     font-weight: 600;
@@ -231,12 +269,12 @@
     opacity: 0.8;
     transition: transform 0.3s ease;
   }
-  
+
   .nav-item:hover .nav-icon {
     transform: scale(1.1);
     opacity: 1;
   }
-  
+
   .nav-item.is-active .nav-icon {
     opacity: 1;
     color: var(--accent-500);
@@ -255,7 +293,11 @@
     font-weight: 600;
     font-size: 14px;
     border: 1px solid transparent;
-    transition: transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard), background 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard);
+    transition:
+      transform 0.18s var(--ease-standard),
+      box-shadow 0.18s var(--ease-standard),
+      background 0.18s var(--ease-standard),
+      border-color 0.18s var(--ease-standard);
     cursor: pointer;
   }
 
@@ -265,20 +307,30 @@
   }
 
   .btn-primary {
-    background: linear-gradient(180deg, rgba(210, 197, 216, 0.85), rgba(185, 174, 199, 0.75));
+    background: linear-gradient(
+      180deg,
+      rgba(210, 197, 216, 0.85),
+      rgba(185, 174, 199, 0.75)
+    );
     color: var(--text-strong);
     border-color: rgba(146, 134, 160, 0.22);
-    box-shadow: var(--shadow-elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    box-shadow:
+      var(--shadow-elev-1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
   }
 
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: var(--shadow-elev-2), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    box-shadow:
+      var(--shadow-elev-2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
   }
 
   .btn-primary:active {
     transform: translateY(0);
-    box-shadow: var(--shadow-elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    box-shadow:
+      var(--shadow-elev-1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45);
   }
 
   .btn-primary:focus {
@@ -312,7 +364,10 @@
     background: rgba(255, 255, 255, 0.62);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-inset);
-    transition: transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard), background 0.18s var(--ease-standard);
+    transition:
+      transform 0.18s var(--ease-standard),
+      box-shadow 0.18s var(--ease-standard),
+      background 0.18s var(--ease-standard);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -324,11 +379,17 @@
     box-shadow: var(--shadow-elev-1), var(--shadow-inset);
   }
 
-  .btn-icon:active { transform: translateY(0); }
-  .btn-icon:focus { outline: none; box-shadow: var(--ring), var(--shadow-elev-1); }
+  .btn-icon:active {
+    transform: translateY(0);
+  }
+  .btn-icon:focus {
+    outline: none;
+    box-shadow: var(--ring), var(--shadow-elev-1);
+  }
 
   /* 4. Inputs */
-  .input, .glass-input {
+  .input,
+  .glass-input {
     height: 44px;
     width: 100%;
     padding: 0 14px;
@@ -337,12 +398,19 @@
     background: rgba(255, 255, 255, 0.72);
     color: var(--text);
     box-shadow: var(--shadow-inset);
-    transition: box-shadow 0.18s var(--ease-standard), background 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard);
+    transition:
+      box-shadow 0.18s var(--ease-standard),
+      background 0.18s var(--ease-standard),
+      border-color 0.18s var(--ease-standard);
   }
 
-  .input::placeholder, .glass-input::placeholder { color: rgba(99, 107, 124, 0.75); }
+  .input::placeholder,
+  .glass-input::placeholder {
+    color: rgba(99, 107, 124, 0.75);
+  }
 
-  .input:focus, .glass-input:focus {
+  .input:focus,
+  .glass-input:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.78);
     border-color: rgba(146, 134, 160, 0.26);
@@ -394,9 +462,21 @@
     justify-content: center;
   }
 
-  .badge--success { color: #2F6C5A; background: rgba(121, 169, 154, 0.22); border-color: rgba(121, 169, 154, 0.32); }
-  .badge--warning { color: #6C5325; background: rgba(202, 164, 106, 0.22); border-color: rgba(202, 164, 106, 0.32); }
-  .badge--danger { color: #6A2E2E; background: rgba(192, 122, 122, 0.22); border-color: rgba(192, 122, 122, 0.32); }
+  .badge--success {
+    color: #2f6c5a;
+    background: rgba(121, 169, 154, 0.22);
+    border-color: rgba(121, 169, 154, 0.32);
+  }
+  .badge--warning {
+    color: #6c5325;
+    background: rgba(202, 164, 106, 0.22);
+    border-color: rgba(202, 164, 106, 0.32);
+  }
+  .badge--danger {
+    color: #6a2e2e;
+    background: rgba(192, 122, 122, 0.22);
+    border-color: rgba(192, 122, 122, 0.32);
+  }
 
   /* 6. Text Gradient */
   .text-gradient {
@@ -411,8 +491,16 @@
 body {
   background: var(--bg-1);
   color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

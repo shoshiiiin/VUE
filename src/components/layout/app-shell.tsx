@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     )}
                 </div>
                 <div className="overflow-hidden flex-1">
-                    <h2 className="font-bold text-[var(--text-strong)] text-base tracking-tight truncate leading-none mb-1">{logoUrl ? companyName : "Product Studio"}</h2>
+                    <h2 className="font-bold text-[var(--text-strong)] text-base tracking-tight truncate leading-none mb-1">{logoUrl ? companyName : "VUE"}</h2>
                     <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-bold opacity-70">Enterprise</p>

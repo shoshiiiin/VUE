@@ -14,7 +14,7 @@ interface BrandContextType {
 const BrandContext = createContext<BrandContextType | undefined>(undefined)
 
 const DEFAULT_PRIMARY = "#9286A0" // Accent-500 from your design system
-const DEFAULT_COMPANY = "Product Studio"
+const DEFAULT_COMPANY = "VUE"
 
 export function BrandProvider({ children }: { children: React.ReactNode }) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
