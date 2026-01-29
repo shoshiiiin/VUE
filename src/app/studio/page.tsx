@@ -176,6 +176,14 @@ export default function Home() {
         }
     }
 
+    // Persist Workspace ID for Gallery
+    if (currentWorkspaceId) {
+        const saved = JSON.parse(localStorage.getItem("vue_workspaces") || "[]");
+        if (!saved.includes(currentWorkspaceId)) {
+            localStorage.setItem("vue_workspaces", JSON.stringify([currentWorkspaceId, ...saved]));
+        }
+    }
+
     setGlobalError(null)
     setResults({})
     setErrorState({})
@@ -246,21 +254,6 @@ export default function Home() {
                       // Optimistically update UI with high-res original
                       const imgData = `data:${data.mimeType || 'image/jpeg'};base64,${data.image}`;
                       setResults(prev => ({ ...prev, [template.id]: imgData }));
-                      
-                      // Convert to WebP for storage (Background process)
-                      import("@/lib/utils").then(({ convertToWebP }) => {
-                          convertToWebP(imgData, 0.8).then(webpData => {
-                             import("@/lib/storage").then(async ({ saveGeneration }) => {
-                                await saveGeneration({
-                                    id: crypto.randomUUID(),
-                                    templateName: template.name,
-                                    templateId: template.id,
-                                    timestamp: Date.now(),
-                                    imageUrl: webpData // Store optimized WebP
-                                });
-                             });
-                          }).catch(err => console.error("WebP conversion failed, saving original", err));
-                      });
                     }
                     
                     if (data.image && currentWorkspaceId) {
