@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerateContentResult } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -79,8 +79,24 @@ export async function POST(req: Request) {
         - **OUTPUT**: Photorealistic, 1:1 Product Match, Aspect Ratio: ${aspectRatio}.
         `;
 
+        // Map Aspect Ratio to standard supported values
+        let targetRatio = aspectRatio;
+        const mapping: Record<string, string> = {
+            "4:5": "3:4",
+            "3:2": "4:3",
+            "2:1": "16:9",
+            "2:3": "3:4",
+        };
+        if (mapping[aspectRatio]) {
+            targetRatio = mapping[aspectRatio];
+        }
+
         const model = genAI.getGenerativeModel({
           model: modelId,
+          generationConfig: {
+              // @ts-expect-error - specific to model version
+              aspectRatio: targetRatio
+          }
         });
 
         const result = await model.generateContent([
@@ -162,8 +178,25 @@ export async function POST(req: Request) {
         Generate the image now.
         `;
 
+        // Map Aspect Ratio to standard supported values
+        // Supported: "1:1", "3:4", "4:3", "9:16", "16:9"
+        let targetRatio = aspectRatio;
+        const mapping: Record<string, string> = {
+            "4:5": "3:4", // Closest vertical
+            "3:2": "4:3", // Closest horizontal
+            "2:1": "16:9", // Closest wide
+            "2:3": "3:4",
+        };
+        if (mapping[aspectRatio]) {
+            targetRatio = mapping[aspectRatio];
+        }
+
         const model = genAI.getGenerativeModel({
             model: modelId,
+            generationConfig: {
+                // @ts-expect-error - specific to google api
+                aspectRatio: targetRatio 
+            }
         });
 
         // Only send product parts, no style part
@@ -175,9 +208,10 @@ export async function POST(req: Request) {
         return processResponse(result, angleName);
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in generate:", error);
-    let errorMessage = error.message || "Something went wrong";
+    const err = error as Error;
+    let errorMessage = err.message || "Something went wrong";
     if (errorMessage.includes("fetch failed")) errorMessage = "Network error connecting to Google API.";
     else if (errorMessage.includes("404")) errorMessage = "Model not found. Try switching to 'Nano Banana'.";
     else if (errorMessage.includes("429")) errorMessage = "Rate limit exceeded. Please wait.";
@@ -186,9 +220,10 @@ export async function POST(req: Request) {
 }
 
 // Helper to standardise response handling
-async function processResponse(result: any, angleName: string) {
+async function processResponse(result: GenerateContentResult, angleName: string) {
     const response = result.response;
     const parts = response.candidates?.[0]?.content?.parts || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const imagePart = parts.find((p: any) => p.inlineData);
 
     if (imagePart?.inlineData?.data) {

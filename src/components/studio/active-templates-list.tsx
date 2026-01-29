@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Trash2, UploadCloud, Plus } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { ExtendedTemplate } from "@/components/studio/shot-library"
 
 interface ActiveTemplatesListProps {
-    templates: any[];
+    templates: ExtendedTemplate[];
     onUpdateImage: (id: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     onDelete: (id: string, e: React.MouseEvent) => void;
     onAddCustom: (e: React.ChangeEvent<HTMLInputElement>) => void;

@@ -1,35 +1,28 @@
-"use client"
-
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Sparkles, Download, Image as ImageIcon, Loader2, UploadCloud, Plus, Trash2, Share2, Check } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Sparkles, Download, Image as ImageIcon, Loader2, Share2 } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FileUpload } from "@/components/ui/file-upload"
-import { cn } from "@/lib/utils"
 // Import Brand Context
 import { useBrand } from "@/lib/brand-context"
-import { SHOT_TEMPLATES, processTemplatePrompt } from "@/lib/shot-templates"
 import { toast } from "sonner"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ShotLibrary } from "@/components/studio/shot-library"
+import { ShotLibrary, ExtendedTemplate } from "@/components/studio/shot-library"
 import { ActiveTemplatesList } from "@/components/studio/active-templates-list"
 import { ResultsGrid } from "@/components/studio/results-grid"
 import { upload } from "@vercel/blob/client";
-import Link from "next/link";
 
 export default function Home() {
   // apiKey removed
 
   const [workspaceId, setWorkspaceId] = React.useState<string | null>(null);
-  const [modelId, setModelId] = React.useState("gemini-3-pro-image-preview")
+  const [modelId] = React.useState("gemini-3-pro-image-preview") // remove setModelId if unused
   // Brand Context
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { logoUrl, companyName } = useBrand()
   
   // Custom Templates State - Start Empty per user request
-  const [templates, setTemplates] = React.useState<any[]>([])
+  const [templates, setTemplates] = React.useState<ExtendedTemplate[]>([])
   
   // Persist Templates
   React.useEffect(() => {
@@ -37,9 +30,6 @@ export default function Home() {
     if (saved) {
         try {
             const parsed = JSON.parse(saved)
-            // Merge saved custom templates with defaults (in case defaults change in code)
-            // Or just append custom ones. Let's replace state if it exists, or merge.
-            // Simple: saved state is the source of truth if it has data.
             setTemplates(parsed)
         } catch (e) {
             console.error("Failed to parse templates", e)
@@ -47,7 +37,7 @@ export default function Home() {
     }
   }, [])
 
-  const saveTemplates = (newTemplates: any[]) => {
+  const saveTemplates = (newTemplates: ExtendedTemplate[]) => {
       setTemplates(newTemplates)
       localStorage.setItem("custom_templates", JSON.stringify(newTemplates))
   }
@@ -58,6 +48,29 @@ export default function Home() {
   const [errorState, setErrorState] = React.useState<Record<string, string | null>>({})
   const [globalError, setGlobalError] = React.useState<string | null>(null)
   const [productBaseName, setProductBaseName] = React.useState<string>("product")
+  
+  // Metadata State
+  const [sku, setSku] = React.useState("")
+  const [variant, setVariant] = React.useState("")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isSavingMetadata, setIsSavingMetadata] = React.useState(false);
+
+  // Auto-save metadata when workspace exists
+  React.useEffect(() => {
+      if (!workspaceId) return;
+      
+      const timer = setTimeout(() => {
+          if (sku || variant) {
+              setIsSavingMetadata(true);
+              fetch(`/api/workspaces/${workspaceId}/manifest`, {
+                  method: "POST",
+                  body: JSON.stringify({ sku, variant })
+              }).finally(() => setIsSavingMetadata(false));
+          }
+      }, 1000); // Debounce 1s
+      
+      return () => clearTimeout(timer);
+  }, [sku, variant, workspaceId]);
 
   // Extract base name
   React.useEffect(() => {
@@ -74,7 +87,6 @@ export default function Home() {
 
   
 
-
   // Handle Custom Template Upload
   const handleAddTemplate = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -83,7 +95,7 @@ export default function Home() {
     const reader = new FileReader();
     reader.onloadend = () => {
         const base64 = reader.result as string;
-        const newTemplate = {
+        const newTemplate: ExtendedTemplate = {
             name: `Custom View ${templates.filter(t => t.isCustom).length + 1}`,
             path: base64, // Store base64 directly for custom templates
             id: `custom_${Date.now()}`,
@@ -201,7 +213,7 @@ export default function Home() {
             // Background Upload of Inputs to Workspace
             if (currentWorkspaceId) {
                 const uploadInputs = async () => {
-                   const newInputs: any[] = [];
+                   const newInputs: {name: string, url: string, type: 'input'}[] = [];
                    for (const file of objectFiles) {
                        try {
                            const blob = await upload(`workspaces/${currentWorkspaceId}/inputs/${file.name}`, file, {
@@ -226,7 +238,7 @@ export default function Home() {
                 try {
                     // For text-only templates (isText=true), we don't fetch a base64 style image
                     let templateBase64 = null;
-                    if (!(template as any).isText) {
+                    if (!template.isText) {
                          templateBase64 = await fetchTemplateAsBase64(template.path);
                     }
                     
@@ -241,7 +253,7 @@ export default function Home() {
                         objectImages: objectBase64s,
                         angleDescription: template.description,
                         angleName: template.name,
-                        textPrompt: (template as any).isText ? template.description : undefined,
+                        textPrompt: template.isText ? template.description : undefined,
                         aspectRatio: template.ratio_options?.[0] || "1:1"
                       }),
                     })
@@ -275,11 +287,12 @@ export default function Home() {
                              });
                          }).catch(e => console.error("Output upload failed", e));
                     }
-                } catch (e: any) {
-                    console.error(`Error generating ${template.name}`, e);
-                    setErrorState(prev => ({ ...prev, [template.id]: e.message || "Unknown error" }))
+                } catch (e: unknown) {
+                    const err = e as Error;
+                    console.error(`Error generating ${template.name}`, err);
+                    setErrorState(prev => ({ ...prev, [template.id]: err.message || "Unknown error" }))
                     // Don't re-throw here so other templates continue
-                    throw e; 
+                    throw err; 
                 } finally {
                     setLoadingState(prev => ({...prev, [template.id]: false}));
                 }
@@ -288,10 +301,11 @@ export default function Home() {
             // Run all in parallel
             await Promise.all(templates.map(generateForTemplate));
             
-        } catch (err: any) {
-            setGlobalError(err.message)
+        } catch (err: unknown) {
+            const error = err as Error;
+            setGlobalError(error.message)
             setLoadingState({})
-            throw err; // Re-throw for toast.promise to catch
+            throw error; // Re-throw for toast.promise to catch
         }
     };
 
@@ -326,7 +340,7 @@ export default function Home() {
                 
                 <div className="space-y-2">
                     <ShotLibrary 
-                        onSelectTemplate={(newTemplate: any) => {
+                        onSelectTemplate={(newTemplate: ExtendedTemplate) => {
                             if (templates.some(t => t.id === newTemplate.id)) {
                                 toast.error("Template already added")
                                 return
@@ -345,6 +359,28 @@ export default function Home() {
                 </div>
 
                 <div className="h-px bg-[var(--border)]" />
+                
+                {/* Metadata Inputs */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-xs font-medium text-[var(--text-muted)]">SKU / Model ID</label>
+                        <Input 
+                            placeholder="e.g. GLASS-001" 
+                            value={sku} 
+                            onChange={(e) => setSku(e.target.value)}
+                            className="bg-[var(--surface-1)] border-transparent focus:bg-white transition-all text-sm"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                         <label className="text-xs font-medium text-[var(--text-muted)]">Variant / Color</label>
+                         <Input 
+                            placeholder="e.g. Matte Black" 
+                            value={variant}
+                            onChange={(e) => setVariant(e.target.value)}
+                            className="bg-[var(--surface-1)] border-transparent focus:bg-white transition-all text-sm"
+                         />
+                    </div>
+                </div>
 
                 <FileUpload 
                     label="Product Images (Glasses)" 
@@ -359,10 +395,16 @@ export default function Home() {
                              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                              Workspace Active
                          </div>
-                         <Button variant="ghost" size="sm" className="h-8 gap-2" onClick={() => window.open(`/share/${workspaceId}`, '_blank')}>
-                                 <Share2 className="w-3.5 h-3.5" />
-                                 Share Link
-                         </Button>
+                         <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" className="h-8 gap-2 bg-white/50" onClick={() => window.open(`/api/workspaces/${workspaceId}/export`, '_blank')}>
+                                    <Download className="w-3.5 h-3.5" />
+                                    Export ZIP
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8 gap-2" onClick={() => window.open(`/share/${workspaceId}`, '_blank')}>
+                                    <Share2 className="w-3.5 h-3.5" />
+                                    Share Link
+                            </Button>
+                         </div>
                     </div>
                 )}
                 

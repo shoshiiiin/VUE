@@ -8,7 +8,8 @@ import {
     Clock,
     X,
     Trash2,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Package
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -102,8 +103,8 @@ export default function GalleryPage() {
                          <ImageIcon className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4 opacity-50" />
                          <h3 className="text-lg font-medium text-[var(--text-strong)]">No Images Found</h3>
                          <p className="text-[var(--text-muted)]">Generate images in the Studio to see them here.</p>
-                         <Button asChild className="mt-4" variant="outline">
-                             <Link href="/studio">Go to Studio</Link>
+                         <Button className="mt-4" variant="outline" onClick={() => window.location.href = '/studio'}>
+                             Go to Studio
                          </Button>
                     </div>
                 ) : (
@@ -145,6 +146,17 @@ export default function GalleryPage() {
                                     >
                                         <ExternalLink className="w-4 h-4" />
                                     </Link>
+                                    {/* Export ZIP */}
+                                    <button 
+                                        className="p-2 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            window.open(`/api/workspaces/${item.workspaceId}/export`, '_blank');
+                                        }}
+                                        title="Export Workspace ZIP"
+                                    >
+                                        <Package className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </motion.div>
                         ))}

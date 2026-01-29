@@ -5,8 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export interface GridTemplate {
+    id: string;
+    name: string;
+    suffix: string;
+    path: string;
+    isCustom: boolean;
+}
+
 interface ResultsGridProps {
-    templates: any[];
+    templates: GridTemplate[];
     results: Record<string, string>;
     loadingState: Record<string, boolean>;
     errorState?: Record<string, string | null>;
@@ -51,6 +59,7 @@ export function ResultsGrid({ templates, results, loadingState, errorState, prod
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     src={results[template.id]}
+                                    alt={`Generated ${template.name}`}
                                     className="w-full h-full object-contain p-4"
                                 />
                             ) : (
@@ -76,7 +85,12 @@ export function ResultsGrid({ templates, results, loadingState, errorState, prod
                                     ) : (
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="w-16 h-16 rounded-[var(--radius-chip)] border border-dashed border-[var(--border)] flex items-center justify-center bg-white/40 overflow-hidden">
-                                                <img src={template.path} className="w-full h-full object-cover opacity-30 grayscale" />
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img 
+                                                    src={template.path} 
+                                                    alt="Template Preview"
+                                                    className="w-full h-full object-cover opacity-30 grayscale" 
+                                                />
                                             </div>
                                             <span className="text-xs font-medium text-[var(--text-muted)]">
                                                 {template.isCustom ? "Custom Reference" : "Waiting for input"}
@@ -88,7 +102,7 @@ export function ResultsGrid({ templates, results, loadingState, errorState, prod
                             
                             {results[template.id] && (
                                 <div className="absolute bottom-4 right-4">
-                                     <Button variant="icon" className="rounded-full shadow-lg" onClick={() => {
+                                     <Button variant="ghost" size="icon" className="rounded-full shadow-lg bg-white/80 hover:bg-white" onClick={() => {
                                          const link = document.createElement('a');
                                          link.href = results[template.id];
                                          link.download = `${productBaseName}${template.suffix}.png`;

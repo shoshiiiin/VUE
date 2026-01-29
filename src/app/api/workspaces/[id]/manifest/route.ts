@@ -5,7 +5,7 @@ export async function POST(request: Request, props: { params: Promise<{ id: stri
   const params = await props.params;
   try {
     const { id } = params;
-    const { addInputs = [], addOutputs = [] } = await request.json();
+    const { addInputs = [], addOutputs = [], sku, variant } = await request.json();
 
     if (!id) {
        return NextResponse.json({ error: "Missing workspace ID" }, { status: 400 });
@@ -27,6 +27,8 @@ export async function POST(request: Request, props: { params: Promise<{ id: stri
     const updatedManifest = {
         ...currentManifest,
         updatedAt: Date.now(),
+        ...(sku !== undefined && { sku }),
+        ...(variant !== undefined && { variant }),
         inputs: [...(currentManifest.inputs || []), ...addInputs],
         outputs: [...(currentManifest.outputs || []), ...addOutputs]
     };

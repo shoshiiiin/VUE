@@ -6,8 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter } from "lucide-react"
 
+// Define the shape of a template expected by the parent
+export interface ExtendedTemplate {
+    id: string; // can be number-based or string-based
+    name: string;
+    path: string;
+    suffix: string;
+    description: string;
+    isCustom: boolean;
+    isText?: boolean;
+    ratio_options?: string[];
+}
+
 interface ShotLibraryProps {
-    onSelectTemplate: (template: any) => void;
+    onSelectTemplate: (template: ExtendedTemplate) => void;
     selectedCount: number;
 }
 
@@ -84,14 +96,15 @@ export function ShotLibrary({ onSelectTemplate, selectedCount }: ShotLibraryProp
                                         <button
                                             key={item.id}
                                             onClick={() => {
-                                                const newTemplate = {
+                                                const newTemplate: ExtendedTemplate = {
                                                     name: item.title,
                                                     path: "https://placehold.co/600x400/png?text=" + encodeURIComponent(item.title), 
                                                     id: `lib_${item.id}_${Date.now()}`,
                                                     suffix: `_${item.id}`,
                                                     description: processTemplatePrompt(item), 
                                                     isCustom: false,
-                                                    isText: true
+                                                    isText: true,
+                                                    ratio_options: item.ratio_options
                                                 };
                                                 onSelectTemplate(newTemplate);
                                             }}

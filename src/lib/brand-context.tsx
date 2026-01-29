@@ -27,6 +27,7 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
     const savedColor = localStorage.getItem("brand_color")
     const savedName = localStorage.getItem("brand_name")
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (savedLogo) setLogoUrl(savedLogo)
     if (savedColor) setPrimaryColor(savedColor)
     if (savedName) setCompanyName(savedName)
@@ -84,14 +85,15 @@ export function useBrand() {
 // Helper to create a transparent ring color from hex
 function createRingColor(hex: string) {
     // Basic hex parsing
-    let c: any;
+    let c: string | string[] | number;
     if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
         c= hex.substring(1).split('');
         if(c.length== 3){
             c= [c[0], c[0], c[1], c[1], c[2], c[2]];
         }
-        c= '0x'+c.join('');
-        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',0.25)';
+        c= '0x'+(c as string[]).join('');
+        const num = Number(c);
+        return 'rgba('+[(num>>16)&255, (num>>8)&255, num&255].join(',')+',0.25)';
     }
     return 'rgba(146, 134, 160, 0.25)'; // fallback
 }
